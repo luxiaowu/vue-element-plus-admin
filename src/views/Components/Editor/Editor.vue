@@ -12,7 +12,20 @@ const change = (editor: IDomEditor) => {
 }
 
 const editorRef = ref<typeof Editor & EditorExpose>()
-
+const editorConfig = ref({
+  MENU_CONF: {
+    uploadImage: {
+      server: 'http://127.0.0.1:3000/api/upload-img',
+      fieldName: 'file',
+      headers: {
+        TOKEN: '123456'
+      },
+      meta: {
+        token: '123456'
+      }
+    }
+  }
+})
 const defaultHtml = ref('')
 
 onMounted(async () => {
@@ -27,6 +40,6 @@ setTimeout(() => {
 
 <template>
   <ContentWrap :title="t('richText.richText')" :message="t('richText.richTextDes')">
-    <Editor v-model="defaultHtml" ref="editorRef" @change="change" />
+    <Editor v-model="defaultHtml" ref="editorRef" @change="change" :editor-config="editorConfig" />
   </ContentWrap>
 </template>

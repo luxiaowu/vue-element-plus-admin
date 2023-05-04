@@ -1,4 +1,4 @@
-import router from './router'
+import router, { asyncRouterMap } from './router'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useCache } from '@/hooks/web/useCache'
 import type { RouteRecordRaw } from 'vue-router'
@@ -44,7 +44,7 @@ router.beforeEach(async (to, from, next) => {
       }
 
       // 开发者可根据实际情况进行修改
-      const roleRouters = wsCache.get('roleRouters') || []
+      const roleRouters = wsCache.get('roleRouters')
       const userInfo = wsCache.get(appStore.getUserInfo)
 
       // 是否使用动态路由

@@ -1,8 +1,9 @@
+import { forEach } from './../../utils/tree'
 import { defineStore } from 'pinia'
 import { asyncRouterMap, constantRouterMap } from '@/router'
 import { generateRoutesFn1, generateRoutesFn2, flatMultiLevelRoutes } from '@/utils/routerHelper'
 import { store } from '../index'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, keyBy, xorWith } from 'lodash-es'
 
 export interface PermissionState {
   routers: AppRouteRecordRaw[]
@@ -44,7 +45,37 @@ export const usePermissionStore = defineStore('permission', {
           routerMap = generateRoutesFn2(routers as AppCustomRouteRecordRaw[])
         } else if (type === 'test') {
           // 模拟前端过滤菜单
-          routerMap = generateRoutesFn1(cloneDeep(asyncRouterMap), routers as string[])
+          routerMap = generateRoutesFn1(asyncRouterMap, routers?.map((x) => x.path) as string[])
+
+          const titleMap = keyBy(routers, 'path')
+          // 重命名
+          const setTitle = (arr, path = '') => {
+            arr.forEach((x) => {
+              const fullPath = [path, x.path].filter(Boolean).join('/')
+              // console.log(444, fullPath)
+              x.meta.title = titleMap[fullPath]?.title || x.meta.title
+              x.fullPath = fullPath
+              if (x.children) {
+                setTitle(x.children, fullPath)
+              }
+            })
+          }
+          setTitle(routerMap)
+          // 排序
+          const sortFun = (a, b) => {
+            if (titleMap[a.fullPath]?.sort && !titleMap[b.fullPath]?.sort) return -1
+            if (titleMap[a.fullPath]?.sort && !titleMap[b.fullPath]?.sort) return 1
+            return titleMap[b.fullPath]?.sort - titleMap[a.fullPath]?.sort
+          }
+          const sortMenu = (arr) => {
+            arr.sort(sortFun)
+            arr.forEach((x) => {
+              if (x.children) {
+                sortMenu(x.children)
+              }
+            })
+          }
+          sortMenu(routerMap)
         } else {
           // 直接读取静态路由表
           routerMap = cloneDeep(asyncRouterMap)
