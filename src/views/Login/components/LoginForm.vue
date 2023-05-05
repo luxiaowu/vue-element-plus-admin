@@ -13,8 +13,6 @@ import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
 import { UserType } from '@/api/login/types'
 import { useValidator } from '@/hooks/web/useValidator'
 import { FormSchema } from '@/types/form'
-import { keyBy } from 'lodash-es'
-import { asyncRouterMap } from '@/router'
 
 const { required } = useValidator()
 
@@ -165,32 +163,13 @@ const getRole = async () => {
     formData.username === 'admin' ? await getAdminRoleApi(params) : await getTestRoleApi(params)
   if (res) {
     const { wsCache } = useCache()
-    // mock 接口返回
-    const roleRouters = [
-      {
-        path: '/dashboard',
-        title: '首页+',
-        sort: 2
-      },
-      {
-        path: '/dashboard/analysis',
-        title: '分析页+',
-        sort: 1
-      },
-      {
-        path: '/dashboard/workplace',
-        title: '工作台+',
-        sort: 2
-      },
-      {
-        path: '/guide',
-        sort: 3
-      }
-    ]
-    wsCache.set('roleRouters', roleRouters)
+    const routers = res.data || []
+    wsCache.set('roleRouters', routers)
+
     formData.username === 'admin'
-      ? await permissionStore.generateRoutes('admin', roleRouters).catch(() => {})
-      : await permissionStore.generateRoutes('test', roleRouters).catch(() => {})
+      ? await permissionStore.generateRoutes('admin', routers).catch(() => {})
+      : await permissionStore.generateRoutes('test', routers).catch(() => {})
+
     permissionStore.getAddRouters.forEach((route) => {
       addRoute(route as RouteRecordRaw) // 动态添加可访问路由表
     })

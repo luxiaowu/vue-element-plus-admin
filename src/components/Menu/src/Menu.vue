@@ -8,7 +8,6 @@ import { useRouter } from 'vue-router'
 import { isUrl } from '@/utils/is'
 import { useDesign } from '@/hooks/web/useDesign'
 import { LayoutType } from '@/types/layout'
-import { keyBy } from 'lodash-es'
 
 const { getPrefixCls } = useDesign()
 

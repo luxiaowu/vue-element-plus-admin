@@ -517,6 +517,28 @@ const testList: string[] = [
   '/error/500-demo'
 ]
 
+const testList1 = [
+  {
+    path: '/dashboard',
+    title: '首页+',
+    sort: 2
+  },
+  {
+    path: '/dashboard/analysis',
+    title: '分析页+',
+    sort: 1
+  },
+  {
+    path: '/dashboard/workplace',
+    title: '工作台+',
+    sort: 2
+  },
+  {
+    path: '/guide',
+    sort: 3
+  }
+]
+
 export default [
   // 列表接口
   {
@@ -527,7 +549,7 @@ export default [
       const { roleName } = query
       return {
         code: result_code,
-        data: roleName === 'admin' ? adminList : testList
+        data: roleName === 'admin' ? adminList : testList1
       }
     }
   }
